@@ -44,6 +44,22 @@ func list(entries []entry) {
 	}
 }
 
+/*
+Since we don't know what order the user will provide the ipaddress and hostname
+The arguments in this function may not be accurate
+parseEntry function will figure out which variables are the hostname and the ip address and place it into a struct
+*/
+func add(hostname string, ipAddress string) {
+	item := parseEntry(hostname + " " + ipAddress)
+	fmt.Println("You entered", item.hostname)
+	fmt.Println("You entered", item.ipAddress)
+	entry := "\n" + item.ipAddress + "    " + item.hostname
+	f, err := os.OpenFile("D:/dev/go-lang/hosts-editor/src/hosts", os.O_APPEND|os.O_WRONLY, 0644)
+	check(err)
+	f.WriteString(entry)
+	f.Close()
+}
+
 func main() {
 	//Our commandline flags
 	var listArg bool
@@ -58,12 +74,12 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Println("List:", listArg)
-	fmt.Println("Delete:", delArg)
-	fmt.Println("Append:", appendArg)
-	fmt.Println("Tail:", flag.Args())
+	// fmt.Println("List:", listArg)
+	// fmt.Println("Delete:", delArg)
+	// fmt.Println("Append:", appendArg)
+	// fmt.Println("Tail:", flag.Args())
 
-	f, err := os.Open("E:/dev/go-lang/hosts-editior/src/hosts")
+	f, err := os.Open("D:/dev/go-lang/hosts-editor/src/hosts")
 	check(err)
 	defer f.Close()
 
@@ -79,8 +95,11 @@ func main() {
 		}
 
 	}
-
+	f.Close()
 	if listArg {
 		list(entries)
+	}
+	if appendArg != "" {
+		add(appendArg, flag.Args()[0])
 	}
 }
